@@ -1,6 +1,6 @@
-# Naive Bayes Classifer built in Rust
+# Naive Bayes Classifier built in Rust
 
-Simple Python-module built in Rust to classify large data sets concurrently in seconds using the Naive Bayes Classifier. Building the module in rust allows for effecient and concurrent evaluation of the samples. Orders of magnitude faster than doing the same in pure Python.
+Simple Python-module built in Rust to classify large data sets concurrently in seconds using Naive Bayes Classification. Building the module in rust allows for effecient and concurrent evaluation of the samples, making this implementation orders of magnitude faster than doing the same in pure Python. Speaking from experience on that one.
 
 ## Usage
 
