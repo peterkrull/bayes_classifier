@@ -8,7 +8,7 @@ use rayon::{slice::ParallelSlice, prelude::{IntoParallelIterator, ParallelIterat
 use std::f64::consts::PI;
 
 #[pymodule]
-#[pyo3(name = "naive_bayes")]
+#[pyo3(name = "naive_bayes_module")]
 fn rust_ext(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     // Python wrapper
