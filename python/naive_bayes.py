@@ -31,7 +31,7 @@ def classifier(x:pd.DataFrame,m:list[np.array],s:list[np.array],target:str = Non
     S = np.ascontiguousarray(s)
            
     if multi:
-        est = bayesian.classifier_par(X,M,S)
+        est = bayesian.classifier_multi(X,M,S)
     else:
         est = bayesian.classifier_single(X,M,S)
         
