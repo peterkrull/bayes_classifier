@@ -1,0 +1,22 @@
+[package]
+name = "naive_bayes_classifier"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "naive_bayes"
+crate-type = ["cdylib"]
+
+[dependencies]
+nalgebra = "0.31.1"
+
+# For parallelizing
+rayon = "1.5"
+
+# For python bindings
+pyo3 = {version = "0.17.2" , features = ["extension-module"]}
+numpy = "0.17.2"
+ndarray = "0.15.6"
+nalgebra-numpy = "0.3.0"
