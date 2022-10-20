@@ -20,3 +20,15 @@ An alternative use involved providing a string to the classifier, signifying the
 ``` python
 est, conf = naive_bayes.classifier(X,M,S,'target')
 ```
+
+----
+
+## To-Do
+
+- Currently priors are not taken into account, meaning that a given sample is equally likely to be any class. This may not be the case in reality, and thus priors need to be implemented. This could be implemented simply by modifying the function arguments, such theat the last example above becomes:
+
+```python
+est = naive_bayes.classifier(X,M,S,P)
+```
+
+- Improve memory allocation during parallelization. Some allocations happen in a loop, which may hinder performacne slightly. Preallocating should improve performance slightly.
