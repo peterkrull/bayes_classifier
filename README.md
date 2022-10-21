@@ -13,7 +13,7 @@ X = # DataFrame containing data to classify
 y = # DataFrame containing data labels 
 
 # Get classifier object
-bayes = rust_bayes.classifier()
+bayes = rust_bayes.classifier_class()
 
 # Fit the model to a data set
 bayes.fit(X,y)
@@ -30,7 +30,7 @@ import rust_bayes
 X = # DataFrame containing data to classify 
 M = # List of class means as numpy.array
 S = # List of class covariances as numpy.array
-P = # Class priors as a numpy array
+P = # Class priors as a numpy.array
 
 est = rust_bayes.classifier(X,M,S,P)
 
