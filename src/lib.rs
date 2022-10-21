@@ -5,10 +5,10 @@ use nalgebra::{self, Dynamic,Matrix, VecStorage, SliceStorage, Const,DMatrixSlic
 use numpy::{IntoPyArray,PyReadonlyArrayDyn,PyArray1,ndarray::ArrayViewD};
 use pyo3::{pymodule, types::PyModule, PyResult, Python};
 use rayon::{slice::ParallelSlice, prelude::ParallelIterator};
-use std::f64::consts::PI;
+use std::{f64::consts::PI, ops::Index};
 
 #[pymodule]
-#[pyo3(name = "naive_bayes_module")]
+#[pyo3(name = "rust_bayes_module")]
 fn rust_ext(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     // Python wrapper
@@ -19,9 +19,10 @@ fn rust_ext(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         x: PyReadonlyArrayDyn<f64>,
         m: PyReadonlyArrayDyn<f64>,
         s: PyReadonlyArrayDyn<f64>,
+        p: PyReadonlyArrayDyn<f64>,
     ) -> &'py PyArray1 <usize> {
 
-        let av_pred = bayesian_classifier_multi(x.as_array(), m.as_array(), s.as_array());
+        let av_pred = bayesian_classifier_multi(x.as_array(), m.as_array(), s.as_array(),p.as_array());
 
         let nd_pred = ndarray::Array1::from_shape_vec(ndarray::Dim(x.shape()[0]), av_pred).unwrap();
 
@@ -43,10 +44,11 @@ fn bayesian_classifier_multi (
     X : ArrayViewD<'_, f64>,
     M : ArrayViewD<'_, f64>,
     S : ArrayViewD<'_, f64>,
+    P : ArrayViewD<'_, f64>,
 )  ->  Vec<usize> {
 
-    // Check for number of covariances
-    if S.shape()[0] != M.shape()[0] {
+    // Check for number of class
+    if S.shape()[0] != M.shape()[0] || P.shape()[0] != M.shape()[0] {
         panic!("Number of mean vectors and covariance matrices are not equal. Got {} means and {} covariances.",M.shape()[0],S.shape()[0])
     }
 
@@ -55,7 +57,7 @@ fn bayesian_classifier_multi (
         panic!("Covariance matrices need to be square. Got {} x {}",S.shape()[1], S.shape()[2])
     }
 
-    // Check for number square covariances
+    // Check for number dimensions being equal
     if X.shape()[1] != M.shape()[1] || S.shape()[1] != M.shape()[1] {
         panic!("Inputs have varying number of dimensions. Got Dim(X) = {:?}, Dim(M) = {:?}, Dim(S) = {:?}",X.shape()[1],M.shape()[1],S.shape()[1])
     }
@@ -65,8 +67,8 @@ fn bayesian_classifier_multi (
     let D = M.shape()[1]; // Number of dimensions
 
     // Ensure slices are valid
-    let (X_slice,M_slice,S_slice) = match (X.to_slice(),M.to_slice(),S.to_slice()) {
-        (Some(x), Some(m), Some(s)) => (x,m,s),
+    let (X_slice,M_slice,S_slice,P_slice) = match (X.to_slice(),M.to_slice(),S.to_slice(),P.to_slice()) {
+        (Some(x), Some(m), Some(s), Some(p)) => (x,m,s,p),
         _ => panic!("One or more array slices are incompatible, need to be contiguous and in standard order"),
     };
 
@@ -83,6 +85,8 @@ fn bayesian_classifier_multi (
         // Form matrix from slice
         let mean = m.slice((0,c), (D,1));
         let scov = s.slice((c*D,0), (D,D));
+
+        let prio = *P_slice.index(c);
         
         // Get inverse of s
         let sinv = match scov.try_inverse() {
@@ -94,7 +98,7 @@ fn bayesian_classifier_multi (
         let norm = 1.0/((2.0*PI).powf(D as f64/2.0)*scov.determinant().sqrt());
 
         // Add class data to vector
-        class.insert(c,ClassData{ mean, sinv, norm, prio : 1.0} );
+        class.insert(c,ClassData{ mean, sinv, norm, prio } );
     }
 
     // Get vector of predictions

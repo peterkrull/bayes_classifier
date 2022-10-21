@@ -1,12 +1,11 @@
 [package]
-name = "naive_bayes_module"
+name = "rust_bayes_module"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Peter Krull"]
 
 [lib]
-name = "naive_bayes_module"
+name = "rust_bayes_module"
 crate-type = ["cdylib"]
 
 [dependencies]
