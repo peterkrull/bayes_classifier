@@ -4,31 +4,44 @@ Simple Python-module built in Rust to classify large data sets concurrently in s
 
 ## Usage
 
-The most basic use of the classifier involes a set of samples and the means and covariances of the classes. 
+The most basic use of the classifier involved fitting a gaussian distribution to each class based on a labeled data set.
 
 ``` python
+from rust_bayes import classifier_class
+
+X = # DataFrame containing data to classify 
+y = # DataFrame containing data labels 
+
+# Get classifier object
+bayes = rust_bayes.classifier()
+
+# Fit the model to a data set
+bayes.fit(X,y)
+
+# Predict 
+est = bayes.predict(X_test)
+```
+
+Alternatively, given a list of means and a list of covariances, a set of samples can be evaluated as such:
+
+```python
 import rust_bayes
 
 X = # DataFrame containing data to classify 
 M = # List of class means as numpy.array
 S = # List of class covariances as numpy.array
+P = # Class priors as a numpy array
 
+est = rust_bayes.classifier(X,M,S,P)
+
+# If priors are not available, uniform priors are assumed:
 est = rust_bayes.classifier(X,M,S)
 ```
-An alternative use involved providing a string to the classifier, signifying the name of the column containing the labels of each sample. This causes the function to also return a confusion matrix, such that the performance of the classification can be evaluated easily.
+It is also possible to provide a string to the classification function, signifying the name of the column containing the labels of each sample in `X`. This causes the function to also return a confusion matrix, such that the performance of the classification can be evaluated easily.
 
 ``` python
-est, conf = rust_bayes.classifier(X,M,S,'target')
+est, conf = rust_bayes.classifier(X,M,S,P,'target')
+
+# Omitting the priors argument results in the priors being determined from target column of X
+est, conf = rust_bayes.classifier(X,M,S,target='target')
 ```
-
-----
-
-## To-Do
-
-- Currently priors are not taken into account, meaning that a given sample is equally likely to be any class. This may not be the case in reality, and thus priors need to be implemented. This could be implemented simply by modifying the function arguments, such theat the last example above becomes:
-
-```python
-est = rust_bayes.classifier(X,M,S,P)
-```
-
-- Improve memory allocation during parallelization. Some allocations happen in a loop, which may hinder performacne slightly. Preallocating should improve performance slightly.
