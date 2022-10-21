@@ -33,17 +33,18 @@ def classifier(x:pd.DataFrame,m:list[np.array],s:list[np.array],p:list[float] = 
     
     # Determine priors
     if type(p).__module__ == np.__name__:
-        P = np.ascontiguousarray(p)
+        P = np.ascontiguousarray(p,dtype = float)
     elif target and not uniform_priors:
         classes = np.sort(x['target'].unique())
-        P = np.ascontiguousarray([len(x[x[target] == c]) for c in classes])
+        P = np.ascontiguousarray([len(x[x[target] == c]) for c in classes],dtype = float)
+        print(P)
         print(f"Warning : No priors were supplied, assuming priors from target column :\n{P/len(x['target'])}")
     else:
         if uniform_priors:
             print("Using uniform priors")
         else:
             print("Warning : No priors were supplied, assuming uniform priors.")
-        P = np.ascontiguousarray([1]*S.shape[0])
+        P = np.ascontiguousarray([1.0]*S.shape[0],dtype = float)
            
     est = bayes.classifier_multi(X,M,S,P)
         
@@ -59,3 +60,19 @@ def classifier(x:pd.DataFrame,m:list[np.array],s:list[np.array],p:list[float] = 
     else:
         print(f"Classification took : {round(time.time()-start,3)} seconds")
         return est
+    
+
+# Basic interface
+class classifier_class:
+
+    def fit(self,X:pd.DataFrame, y:pd.DataFrame):
+        
+        classes = np.sort(y.unique())
+        
+        self.M = [X[y == c].mean() for c in classes]
+        self.S = [X[y == c].cov() for c in classes]
+        self.P = np.ascontiguousarray([len(y[y == c]) for c in classes])
+        
+    def predict(self,X:pd.DataFrame):
+        return classifier(X,self.M,self.S,self.P)
+        
