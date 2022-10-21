@@ -39,7 +39,7 @@ struct ClassData <'a>  {
     prio : f64,
 }
 
-/// Multi-threaded naive bayesian classifier
+/// Multi-threaded bayesian classifier
 fn bayesian_classifier_multi (
     X : ArrayViewD<'_, f64>,
     M : ArrayViewD<'_, f64>,
