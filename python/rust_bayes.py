@@ -17,6 +17,9 @@ class classifier:
             `c (pd.DataFrame, optional)`: Subset of classes to use. Defaults to None.
         """
         
+        # Check dimensions        
+        if len(X) != len(y) : raise ValueError(f"Length of X and y do not match : len(X):{len(X)} != len(y):{len(y)}")
+        
         # Get sorted list of all classses in data set        
         classes = np.sort(y.unstack().unique()) if c == None else c
     
