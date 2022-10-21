@@ -4,7 +4,7 @@ import time
 
 import rust_bayes_module as bayes
 
-# Basic interface
+# Basic Python interface for rust module
 class classifier:
 
     def fit(self, X:pd.DataFrame, y:pd.DataFrame, p:pd.DataFrame = None, c:pd.DataFrame = None):
@@ -18,10 +18,13 @@ class classifier:
         """
         
         # Check dimensions        
-        if len(X) != len(y) : raise ValueError(f"Length of X and y do not match : len(X):{len(X)} != len(y):{len(y)}")
+        if len(X) != len(y) :
+            raise ValueError(f"Length of X and y do not match : len(X):{len(X)} != len(y):{len(y)}")
         
         # Get sorted list of all classses in data set        
         classes = np.sort(y.unstack().unique()) if c == None else c
+        
+        self.X_shape = X.shape
     
         # Calculate mean, covariance and priors of data set
         self.M = np.ascontiguousarray([X[y[0] == c].mean() for c in classes], dtype = float)
@@ -39,11 +42,18 @@ class classifier:
             `(np.array)`: _description_
         """
         
+        # Check dimensions        
+        if (x1:=self.X_shape[1]) != (x2:=X.shape[1]) :
+            raise ValueError(f"Incorrect number of features for this model. Expected {x1}, got {x2}")
+        
+        # Note start time
         start_time = time.time()
         
+        # Call rust module to make predictions
         prediction = bayes.classifier_multi( np.ascontiguousarray(X), self.M, self.S, self.P )
         
-        if verbose:
+        # Print elapsed time if verbose is true
+        if verbose :
             print(f"Classification of {len(X)} samples took : { round(time.time()-start_time,3) } seconds")
         
         return prediction
