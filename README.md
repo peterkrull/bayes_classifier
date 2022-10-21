@@ -4,7 +4,7 @@ Simple Python-module built in Rust to classify large data sets concurrently in s
 
 ## Usage
 
-The most basic use of the classifier involved fitting a gaussian distribution to each class based on a labeled data set.
+The most basic use of the classifier involves fitting a gaussian distribution to each class based the training data and the corresponding labels. Then the class subsequent data sets or data samples can predicted.
 
 ``` python
 from rust_bayes import classifier
