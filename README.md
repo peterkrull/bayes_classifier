@@ -1,6 +1,6 @@
 # Bayes Classifier built in Rust
 
-Simple Python-module built in Rust to classify large data sets concurrently in seconds using Bayes Classification. Compared with Naive Bayesian classification, where it is assumed that the covariance matrix only has diagonal entries, a "full" Bayesian classification uses the entire covariance matrix, allowing for correlated samples. Building the module in rust allows for effecient and concurrent evaluation of the samples, making this implementation orders of magnitudes faster than doing the same in pure Python. Speaking from experience on that one.
+Simple Python-module built in Rust to classify large data sets concurrently in seconds using Bayes classification. Compared with Naive Bayesian classification, where it is assumed that the covariance matrix only has diagonal entries, a "full" Bayesian classification uses the entire covariance matrix, allowing for correlated features. Building the module in rust allows for effecient and concurrent evaluation of the samples, making this implementation orders of magnitudes faster than doing the same in pure Python. Speaking from experience on that one.
 
 ## Usage
 
@@ -22,7 +22,7 @@ bayes.fit(X,y)
 est = bayes.predict(X_test)
 ```
 
-## Demonstration
+## Difference between naive vs. non-naive approach
 
 Assuming non-correlation between features is fine for some problems, but may cause problems for other types of problems, where features are more correlated. See the example below, where the distributions are very 'diagonal' on the plot. The non-naive classification does fine here.
 
