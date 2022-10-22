@@ -22,5 +22,14 @@ bayes.fit(X,y)
 est = bayes.predict(X_test)
 ```
 
-## Example image
-![](image/readme_example.png)
+## Demonstration
+
+Assuming non-correlation between features is fine for some problems, but may cause problems for other types of problems, where features are more correlated. See the example below, where the distributions are very 'diagonal' on the plot. The non-naive classification does fine here.
+
+### Bayes Classification
+![](image/example_bayes.png)
+
+Compare this with the naive approach, where these distributions cannot be represented accurately, which results in worse classification accuracy.
+
+### Naive Bayes Classification
+![](image/example_naive.png)
