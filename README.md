@@ -21,3 +21,6 @@ bayes.fit(X,y)
 # Predict 
 est = bayes.predict(X_test)
 ```
+
+## Example image
+![](image/readme_example.png)
