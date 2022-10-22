@@ -24,7 +24,8 @@ class classifier:
         # Get sorted list of all classses in data set        
         classes = np.sort(y.unstack().unique()) if c == None else c
         
-        self.X_shape = X.shape
+        # Save dimensionality
+        self.dim = X.shape[1]
     
         # Calculate mean, covariance and priors of data set
         self.M = np.ascontiguousarray([X[y[0] == c].mean() for c in classes], dtype = float)
@@ -42,19 +43,9 @@ class classifier:
             `(np.array)`: _description_
         """
         
-        # Check dimensions        
-        if (x1:=self.X_shape[1]) != (x2:=X.shape[1]) :
-            raise ValueError(f"Incorrect number of features for this model. Expected {x1}, got {x2}")
-        
-        # Note start time
-        start_time = time.time()
+        # Check if dimensions of new data set mathces model        
+        if (d1:=self.dim) != (d2:=X.shape[1]) :
+            raise ValueError(f"Incorrect number of features for this model. Expected {d1}, got {d2}")
         
         # Call rust module to make predictions
-        prediction = bayes.classifier_multi( np.ascontiguousarray(X), self.M, self.S, self.P )
-        
-        # Print elapsed time if verbose is true
-        if verbose :
-            print(f"Classification of {len(X)} samples took : { round(time.time()-start_time,3) } seconds")
-        
-        return prediction
-    
+        return bayes.classifier( np.ascontiguousarray(X), self.M, self.S, self.P , verbose )

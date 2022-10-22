@@ -1,11 +1,11 @@
-// #![allow(unused)]
 #![allow(non_snake_case)]
 
 use nalgebra::{self, Dynamic,Matrix, VecStorage, SliceStorage, Const,DMatrixSlice};
 use numpy::{IntoPyArray,PyReadonlyArrayDyn,PyArray1,ndarray::ArrayViewD};
 use pyo3::{pymodule, types::PyModule, PyResult, Python};
 use rayon::{slice::ParallelSlice, prelude::ParallelIterator};
-use std::{f64::consts::PI, ops::Index};
+use std::{f64::consts::PI, ops::Index, time::Instant};
+use indicatif::ParallelProgressIterator;
 
 #[pymodule]
 #[pyo3(name = "rust_bayes_module")]
@@ -13,20 +13,22 @@ fn rust_ext(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     // Python wrapper
     #[pyfn(m)]
-    #[pyo3(name = "classifier_multi")]
-    fn bayesian_classifier_multi_py<'py>(
+    #[pyo3(name = "classifier")]
+    fn bayes_classifier_py<'py>(
         py: Python<'py>,
         x: PyReadonlyArrayDyn<f64>,
         m: PyReadonlyArrayDyn<f64>,
         s: PyReadonlyArrayDyn<f64>,
         p: PyReadonlyArrayDyn<f64>,
+        verbose : bool,
     ) -> &'py PyArray1 <usize> {
 
-        let av_pred = bayesian_classifier_multi(x.as_array(), m.as_array(), s.as_array(),p.as_array());
+        // Call bayes classifier function with Py arrays converted to numpy array view
+        let pred = bayes_classifier(x.as_array(), m.as_array(), s.as_array(),p.as_array(), verbose);
 
-        let nd_pred = ndarray::Array1::from_shape_vec(ndarray::Dim(x.shape()[0]), av_pred).unwrap();
+        // Convert predictions back into Python array and return
+        pred.into_pyarray(py)
 
-        nd_pred.into_pyarray(py)
     }
 
     Ok(())
@@ -40,12 +42,16 @@ struct ClassData <'a>  {
 }
 
 /// Multi-threaded bayesian classifier
-fn bayesian_classifier_multi (
+fn bayes_classifier (
     X : ArrayViewD<'_, f64>,
     M : ArrayViewD<'_, f64>,
     S : ArrayViewD<'_, f64>,
     P : ArrayViewD<'_, f64>,
+    verbose : bool,
 )  ->  Vec<usize> {
+
+    // Note start time
+    let start_time = Instant::now();
 
     // Check for number of class
     if S.shape()[0] != M.shape()[0] || P.shape()[0] != M.shape()[0] {
@@ -121,9 +127,16 @@ fn bayesian_classifier_multi (
                 Some(k) => k,
                 None => panic!("Failed during argmax operation."),
             }
-    } ).collect();
+    } );
 
     // Return predictions
-    predictions
+    match verbose {
+        true => {
+            let result = predictions.progress().collect();
+            println!("Classification of {} samples took : {:?}",X.shape()[0],start_time.elapsed());
+            result
+        },
+        false => predictions.collect(),
+    }
 
 }

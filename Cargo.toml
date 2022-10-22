@@ -9,13 +9,14 @@ name = "rust_bayes_module"
 crate-type = ["cdylib"]
 
 [dependencies]
-nalgebra = "0.31.1"
+nalgebra = "0.31.2"
+indicatif = {version = "0.17.1",features = ["rayon"]}
 
 # For parallelizing
 rayon = "1.5"
 
 # For python bindings
-pyo3 = {version = "0.17.2" , features = ["extension-module"]}
+pyo3 = { version = "0.17.2" , features = ["extension-module"] }
 numpy = "0.17.2"
 ndarray = "0.15.6"
 nalgebra-numpy = "0.3.0"
