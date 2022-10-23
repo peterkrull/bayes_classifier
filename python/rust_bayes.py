@@ -17,9 +17,9 @@ class classifier:
         
         # If DataFrame is proveded, convert into numpy array
         if type(X).__name__ == 'DataFrame' : X = np.array(X)
-        if type(y).__name__ == 'DataFrame' : y = np.array(y)
-        if type(p).__name__ == 'DataFrame' : p = np.array(p)
-        if type(c).__name__ == 'DataFrame' : c = np.array(c)
+        if type(y).__name__ == 'DataFrame' : y = np.array(y).flatten()
+        if type(p).__name__ == 'DataFrame' : p = np.array(p).flatten()
+        if type(c).__name__ == 'DataFrame' : c = np.array(c).flatten()
         
         # Check dimensions        
         if (l1:=len(X)) != (l2:=len(y)) :
