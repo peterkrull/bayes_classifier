@@ -15,11 +15,11 @@ class classifier:
             `c (np.ndarray, optional)`: Subset of classes to use. Defaults to None.
         """
         
-        # If DataFrame is proveded, convert into numpy array
-        if type(X).__name__ == 'DataFrame' : X = np.array(X)
-        if type(y).__name__ == 'DataFrame' : y = np.array(y).flatten()
-        if type(p).__name__ == 'DataFrame' : p = np.array(p).flatten()
-        if type(c).__name__ == 'DataFrame' : c = np.array(c).flatten()
+        # Enforce numpy array type
+        X = np.array(X)
+        y = np.array(y).flatten()
+        p = np.array(p).flatten()
+        c = np.array(c).flatten()
 
         # Check dimensions        
         if (l1:=len(X)) != (l2:=len(y)) :
@@ -51,7 +51,7 @@ class classifier:
         """
         
         # If DataFrame is proveded, convert into numpy array
-        if type(X).__name__ == 'DataFrame' : X = np.array(X)
+        X = np.array(X)
         
         # Check if dimensions of new data set mathces model        
         if (d1:=self.dim) != (d2:=X.shape[1]) :
