@@ -52,6 +52,10 @@ class classifier:
         
         # If DataFrame is proveded, convert into numpy array
         X = np.array(X)
+
+        # If single sample was provided, do extra wrapping
+        if len(X.shape) == 1:
+            X = np.array([X])
         
         # Check if dimensions of new data set mathces model        
         if (d1:=self.dim) != (d2:=X.shape[1]) :
